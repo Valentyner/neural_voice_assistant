@@ -2,13 +2,14 @@ import webrtcvad
 import collections
 import sys
 import pyaudio
-import whisper
 import torch
+import pygame
+import wave
+import time
 
 from array import array
 from struct import pack
-import wave
-import time
+from speech_to_text import speech_to_text
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -30,8 +31,6 @@ vad = webrtcvad.Vad(1)
 
 # ------ Steve Cox
 # One time Pygame init
-
-import pygame
 
 pygame.mixer.pre_init(RATE, -16, CHANNELS, 2048)  # setup mixer to avoid sound lag
 pygame.mixer.init()
@@ -133,25 +132,7 @@ while True:
     print("* Audio saved to output.wav")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    model = whisper.load_model("base").to(device)
-    audio = whisper.load_audio("output.wav")
-    audio = whisper.pad_or_trim(audio)
-
-    mel = whisper.log_mel_spectrogram(audio).to(device)
-
-    options = whisper.DecodingOptions(language="Ukrainian")
-
-    model.eval()
-
-    with torch.no_grad():
-        result = whisper.decode(model, mel, options)
-
-
-    with open("transcription.txt", "w") as f:
-        f.write(result.text)
-
-    break
+    speech_to_text("output.wav", device, language="Ukraininan")
 
     # write to file
     raw_data.reverse()

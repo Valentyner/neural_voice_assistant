@@ -1,20 +1,20 @@
+import torch
 import whisper
 
-model = whisper.load_model("base")
+def speech_to_text(audio_path, device, language="Ukrainian"):
 
-audio = whisper.load_audio("audio_2024-05-03_02-40-36.ogg")
-audio = whisper.pad_or_trim(audio)
+    model = whisper.load_model("base").to(device)
+    audio = whisper.load_audio(audio_path)
+    audio = whisper.pad_or_trim(audio)
 
-# make log-Mel spectrogram and move to the same device as the model
-mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    mel = whisper.log_mel_spectrogram(audio).to(device)
 
-# detect the spoken language
-_, probs = model.detect_language(mel)
-print(f"Detected language: {max(probs, key=probs.get)}")
+    options = whisper.DecodingOptions(language="Ukrainian")
 
-# decode the audio
-options = whisper.DecodingOptions()
-result = whisper.decode(model, mel, options)
+    model.eval()
 
-# print the recognized text
-print(result.text)
+    with torch.no_grad():
+        result = whisper.decode(model, mel, options)
+
+    with open("transcription.txt", "w") as f:
+        f.write(result.text)
