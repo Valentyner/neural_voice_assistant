@@ -3,8 +3,10 @@ import tempfile
 from text2speech import text2speech
 from speech2text import speech2text
 from groq_service import execute
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app, origins=["*"])
 
 
 @app.route("/")
@@ -13,6 +15,7 @@ def index():
 
 
 @app.route("/process-audio", methods=["POST"])
+@cross_origin()
 def process_audio():
     audio_data = request.files["audio"].read()
 

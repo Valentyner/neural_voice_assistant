@@ -22,7 +22,7 @@ def text2speech(text):
         # )
         #
         # response = deepgram.speak.v("1").save(filename, SPEAK_OPTIONS, options)
-        tts = gTTS(text=text, lang='uk')
+        tts = gTTS(text=text, lang='uk', slow=False)
         tts.save(filename)
         return filename
 

@@ -2,14 +2,12 @@ import webrtcvad
 import collections
 import sys
 import pyaudio
-import torch
 import pygame
 import wave
 import time
 
 from array import array
 from struct import pack
-from speech_to_text import speech_to_text
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -130,9 +128,6 @@ while True:
         wf.writeframes(b''.join([pack('<h', sample) for sample in raw_data]))
 
     print("* Audio saved to output.wav")
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    speech_to_text("output.wav", device, language="Ukraininan")
 
     # write to file
     raw_data.reverse()
