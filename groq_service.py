@@ -24,7 +24,3 @@ def execute(prompt):
         response += chunk.choices[0].delta.content or ""
 
     return response
-
-
-if __name__ == '__main__':
-    print(execute("Льотні характеристики Мі-24"))
