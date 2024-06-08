@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, render_template
+from flask import Flask, request, send_file, render_template, jsonify
 import tempfile
 from text2speech import text2speech
 from speech2text import speech2text
@@ -6,12 +6,24 @@ from groq_service import execute
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-CORS(app, origins=["*"])
+CORS(app, origins=["http://localhost:5173"])
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/process-text", methods=["POST"])
+@cross_origin()
+def process_text():
+    data = request.get_json()
+    if not data or "text" not in data:
+        return jsonify({"error": "No text data provided"}), 400
+
+    text_data = data["text"]
+    generated_answer = execute(f"Будь ласка дай відповідь на запит Українською мовою {text_data}")
+
+    return jsonify({"answer": generated_answer})
 
 
 @app.route("/process-audio", methods=["POST"])
